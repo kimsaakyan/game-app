@@ -10,7 +10,7 @@ module.exports = (choices) => {
             for (let j = i + 1; j < choices.length; j++) {
                 if (choices[i] === choices[j]) {
                     console.log(
-                        `Repetition found:: ${choices[i]} === ${choices[j]}`
+                        `Repetition found!`
                     );
                     console.log(
                         'The moves must not be repeated. For example: A B C, NOT A B B C D'

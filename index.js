@@ -2,6 +2,7 @@ const СomputerGame = require('./computerGame');
 const UserGame = require('./userGame');
 const gameValidation = require('./gameValidation');
 const gameRule = require('./gameRule');
+const { generateSecurityKey } = require('./generateSecurityKey');
 
 const choices = process.argv.slice(2);
 const computer = new СomputerGame(choices);
@@ -10,7 +11,9 @@ const user = new UserGame(choices);
 function play(choices) {
     if (gameValidation(choices)) {
         //1 HMAC - комп. , для дальнейшей проверки.
-        const compHMAC = computer.calculateHMAC();
+        const secureKey = generateSecurityKey();
+
+        const compHMAC = computer.calculateHMAC(secureKey);
         console.log('Computer HMAC:', compHMAC);
 
         // Ход пользователя. Открытие меню
@@ -18,8 +21,8 @@ function play(choices) {
         const userChoice = user.getUserChoice();
         console.log('User Choice:', userChoice);
 
-        const userHMAC = computer.calculateHMAC();
-        console.log('User HMAC:', userHMAC);
+		// HMAC - польз. , для дальнейшей проверки.
+        const userHMAC = computer.calculateHMAC(secureKey);
 
         // Ход компьтера
         const computerChoice = computer.computerChoice;
@@ -27,8 +30,6 @@ function play(choices) {
 
         // Проверка совпадения HMAC
         if (compHMAC === userHMAC) {
-            console.log('HMACs match.');
-
             const userIndex = choices.indexOf(userChoice);
             const compIndex = choices.indexOf(computerChoice);
 
@@ -37,4 +38,4 @@ function play(choices) {
     }
 }
 
-console.log(play(choices));
+play(choices);

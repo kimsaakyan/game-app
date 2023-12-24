@@ -4,18 +4,11 @@ const crypto = require('crypto');
 module.exports = class UserGame {
     constructor(choices) {
         this.choices = choices;
-        this.secureKey = this.generateSecurityKey();
     }
 
-    generateSecurityKey() {
-        // Генерация криптографически стойкого ключа
-        const key = crypto.randomBytes(32).toString('hex');
-        return key;
-    }
-
-    calculateHMAC() {
+    calculateHMAC(secureKey) {
         // Вычисление HMAC от хода пользователя с использованием ключа
-        const hmac = crypto.createHmac('sha256', this.secureKey);
+        const hmac = crypto.createHmac('sha256', secureKey);
         hmac.update(this.getUserChoice());
         const calculatedHMAC = hmac.digest('hex');
         return calculatedHMAC;
@@ -34,6 +27,11 @@ module.exports = class UserGame {
         do {
             choice = readlineSync.questionInt('Enter your choice: ');
         } while (!this.choiceValidation(choice));
+
+        if (choice === 0) {
+            console.log('You exited the game.');
+            process.exit(0);
+        }
 
         return this.choices[choice - 1];
     }
